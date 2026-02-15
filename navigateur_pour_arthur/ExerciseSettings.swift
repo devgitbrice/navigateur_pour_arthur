@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Observation
 
-enum ExerciseType: String, CaseIterable, Identifiable {
+enum ExerciseType: String, CaseIterable, Identifiable, Sendable, Hashable {
     case math = "Math"
     case lecture = "Lecture"
     case grammaire = "Grammaire"
@@ -23,10 +24,10 @@ enum ExerciseType: String, CaseIterable, Identifiable {
     }
 }
 
-@MainActor
-class ExerciseSettings: ObservableObject {
-    @Published var intervalMinutes: Int = 5
-    @Published var enabledExerciseTypes: Set<ExerciseType> = [.math, .lecture, .grammaire]
+@Observable
+class ExerciseSettings {
+    var intervalMinutes: Int = 5
+    var enabledExerciseTypes: Set<ExerciseType> = [.math, .lecture, .grammaire]
 
     func isEnabled(_ type: ExerciseType) -> Bool {
         enabledExerciseTypes.contains(type)

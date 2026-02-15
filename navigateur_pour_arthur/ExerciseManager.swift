@@ -6,26 +6,27 @@
 //
 
 import Foundation
-import Combine
+import Observation
 
-struct Exercise: Identifiable {
+struct Exercise: Identifiable, Sendable {
     let id = UUID()
     let title: String
     let content: String
     let type: ExerciseType
 }
 
-@MainActor
-class ExerciseManager: ObservableObject {
-    @Published var showExercise: Bool = false
-    @Published var currentExercise: Exercise?
-    @Published var exerciseQueue: [Exercise] = []
-    @Published var currentExerciseIndex: Int = 0
+@Observable
+class ExerciseManager {
+    var showExercise: Bool = false
+    var currentExercise: Exercise?
+    var currentExerciseIndex: Int = 0
 
-    private var timer: Timer?
+    private var timerTask: Task<Void, Never>?
     private let settings: ExerciseSettings
 
-    private let predefinedArticles: [Exercise] = [
+    let exerciseQueue: [Exercise]
+
+    private static let predefinedArticles: [Exercise] = [
         Exercise(
             title: "Arthur le Prouteur Magique",
             content: """
@@ -62,22 +63,24 @@ class ExerciseManager: ObservableObject {
 
     init(settings: ExerciseSettings) {
         self.settings = settings
-        self.exerciseQueue = predefinedArticles
+        self.exerciseQueue = Self.predefinedArticles
     }
 
     func startTimer() {
         stopTimer()
-        let interval = TimeInterval(settings.intervalMinutes * 60)
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                self?.triggerExercise()
+        timerTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(settings.intervalMinutes * 60))
+                if !Task.isCancelled {
+                    triggerExercise()
+                }
             }
         }
     }
 
     func stopTimer() {
-        timer?.invalidate()
-        timer = nil
+        timerTask?.cancel()
+        timerTask = nil
     }
 
     func restartTimer() {

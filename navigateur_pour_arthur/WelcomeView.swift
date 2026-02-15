@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum UserMode {
+enum UserMode: Equatable {
     case enfant
     case adulte
 }
