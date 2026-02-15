@@ -40,13 +40,13 @@ struct TabBar: View {
                 }
                 .padding(.horizontal, 8)
             }
-            .onChange(of: viewModel.activeTabIndex) { _ in
+            .onChange(of: viewModel.activeTabIndex, perform: { _ in
                 if let tab = viewModel.activeTab {
                     withAnimation {
                         proxy.scrollTo(tab.id, anchor: .center)
                     }
                 }
-            }
+            })
         }
         .frame(height: 36)
         .background(Color(.systemGray5))
