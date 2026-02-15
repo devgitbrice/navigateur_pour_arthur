@@ -33,7 +33,7 @@ struct AddressBar: View {
                     tab.loadURLString(addressText)
                     isFocused = false
                 }
-                .onChange(of: isFocused) { _, focused in
+                .onChange(of: isFocused) { focused in
                     if focused {
                         isEditing = true
                         addressText = tab.url?.absoluteString ?? ""
@@ -79,7 +79,7 @@ struct AddressBar: View {
         .onAppear {
             updateDisplayText()
         }
-        .onChange(of: tab.url) { _, _ in
+        .onChange(of: tab.url) { _ in
             if !isEditing {
                 updateDisplayText()
             }
