@@ -9,31 +9,37 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var userMode: UserMode?
-    @State private var exerciseSettings = ExerciseSettings()
-    @State private var exerciseManager: ExerciseManager?
+    @StateObject private var exerciseSettings = ExerciseSettings()
+    @StateObject private var exerciseManager: ExerciseManager
+
+    init() {
+        let settings = ExerciseSettings()
+        _exerciseSettings = StateObject(wrappedValue: settings)
+        _exerciseManager = StateObject(wrappedValue: ExerciseManager(settings: settings))
+    }
 
     var body: some View {
         Group {
-            if let mode = userMode, let manager = exerciseManager {
+            if let mode = userMode {
                 BrowserView(
                     userMode: mode,
                     exerciseSettings: exerciseSettings,
-                    exerciseManager: manager
+                    exerciseManager: exerciseManager
                 )
             } else {
                 WelcomeView(userMode: $userMode)
             }
         }
-        .onChange(of: userMode) { _, newMode in
+        .onChange(of: userMode) { newMode in
             if newMode != nil {
-                let manager = ExerciseManager(settings: exerciseSettings)
-                exerciseManager = manager
-                manager.startTimer()
+                exerciseManager.startTimer()
             }
         }
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
