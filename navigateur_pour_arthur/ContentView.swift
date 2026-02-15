@@ -30,11 +30,11 @@ struct ContentView: View {
                 WelcomeView(userMode: $userMode)
             }
         }
-        .onChange(of: userMode) { newMode in
+        .onChange(of: userMode, perform: { newMode in
             if newMode != nil {
                 exerciseManager.startTimer()
             }
-        }
+        })
     }
 }
 

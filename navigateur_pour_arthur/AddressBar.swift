@@ -33,7 +33,7 @@ struct AddressBar: View {
                     tab.loadURLString(addressText)
                     isFocused = false
                 }
-                .onChange(of: isFocused) { focused in
+                .onChange(of: isFocused, perform: { focused in
                     if focused {
                         isEditing = true
                         addressText = tab.url?.absoluteString ?? ""
@@ -41,7 +41,7 @@ struct AddressBar: View {
                         isEditing = false
                         updateDisplayText()
                     }
-                }
+                })
 
             // Bouton effacer
             if isEditing && !addressText.isEmpty {
@@ -79,11 +79,11 @@ struct AddressBar: View {
         .onAppear {
             updateDisplayText()
         }
-        .onChange(of: tab.url) { _ in
+        .onChange(of: tab.url, perform: { _ in
             if !isEditing {
                 updateDisplayText()
             }
-        }
+        })
     }
 
     private func updateDisplayText() {
