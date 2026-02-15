@@ -20,7 +20,14 @@ struct BrowserView: View {
         ZStack {
             VStack(spacing: 0) {
                 // Barre d'onglets
-                TabBar(viewModel: viewModel)
+                HStack(spacing: 0) {
+                    TabBar(viewModel: viewModel)
+
+                    Text(":navarthur")
+                        .font(.system(size: 12, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 8)
+                }
 
                 Divider()
 
