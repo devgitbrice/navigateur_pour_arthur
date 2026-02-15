@@ -6,27 +6,26 @@
 //
 
 import Foundation
-import Observation
+import Combine
 
-struct Exercise: Identifiable, Sendable {
+struct Exercise: Identifiable {
     let id = UUID()
     let title: String
     let content: String
     let type: ExerciseType
 }
 
-@Observable
-class ExerciseManager {
-    var showExercise: Bool = false
-    var currentExercise: Exercise?
-    var currentExerciseIndex: Int = 0
+class ExerciseManager: ObservableObject {
+    @Published var showExercise: Bool = false
+    @Published var currentExercise: Exercise?
+    @Published var currentExerciseIndex: Int = 0
 
     private var timerTask: Task<Void, Never>?
     private let settings: ExerciseSettings
 
     let exerciseQueue: [Exercise]
 
-    private static let predefinedArticles: [Exercise] = [
+    static let predefinedArticles: [Exercise] = [
         Exercise(
             title: "Arthur le Prouteur Magique",
             content: """
@@ -68,11 +67,12 @@ class ExerciseManager {
 
     func startTimer() {
         stopTimer()
-        timerTask = Task {
+        let minutes = settings.intervalMinutes
+        timerTask = Task { @MainActor [weak self] in
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(settings.intervalMinutes * 60))
+                try? await Task.sleep(nanoseconds: UInt64(minutes) * 60 * 1_000_000_000)
                 if !Task.isCancelled {
-                    triggerExercise()
+                    self?.triggerExercise()
                 }
             }
         }
