@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @ObservedObject var settings: ExerciseSettings
-    @ObservedObject var exerciseManager: ExerciseManager
+    @Bindable var settings: ExerciseSettings
+    var exerciseManager: ExerciseManager
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -43,7 +43,8 @@ struct SettingsView: View {
                 Section {
                     Button("Lancer un exercice maintenant") {
                         dismiss()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        Task {
+                            try? await Task.sleep(for: .milliseconds(300))
                             exerciseManager.triggerExercise()
                         }
                     }

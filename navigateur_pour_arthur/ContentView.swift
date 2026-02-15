@@ -9,22 +9,16 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var userMode: UserMode?
-    @StateObject private var exerciseSettings: ExerciseSettings
-    @StateObject private var exerciseManager: ExerciseManager
-
-    init() {
-        let settings = ExerciseSettings()
-        _exerciseSettings = StateObject(wrappedValue: settings)
-        _exerciseManager = StateObject(wrappedValue: ExerciseManager(settings: settings))
-    }
+    @State private var exerciseSettings = ExerciseSettings()
+    @State private var exerciseManager: ExerciseManager?
 
     var body: some View {
         Group {
-            if let mode = userMode {
+            if let mode = userMode, let manager = exerciseManager {
                 BrowserView(
                     userMode: mode,
                     exerciseSettings: exerciseSettings,
-                    exerciseManager: exerciseManager
+                    exerciseManager: manager
                 )
             } else {
                 WelcomeView(userMode: $userMode)
@@ -32,7 +26,9 @@ struct ContentView: View {
         }
         .onChange(of: userMode) { _, newMode in
             if newMode != nil {
-                exerciseManager.startTimer()
+                let manager = ExerciseManager(settings: exerciseSettings)
+                exerciseManager = manager
+                manager.startTimer()
             }
         }
     }

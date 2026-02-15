@@ -11,8 +11,8 @@ struct BrowserView: View {
     @StateObject private var viewModel = BrowserViewModel()
 
     let userMode: UserMode
-    @ObservedObject var exerciseSettings: ExerciseSettings
-    @ObservedObject var exerciseManager: ExerciseManager
+    var exerciseSettings: ExerciseSettings
+    var exerciseManager: ExerciseManager
 
     @State private var showSettings = false
 
